@@ -2,11 +2,10 @@
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copia apenas o conteúdo da pasta do backend para dentro do container
-# Isso evita copiar arquivos desnecessários do front-end para o build do Java
-COPY fitshake_back_end /app
+# Copia tudo o que está na pasta atual (onde o Dockerfile está) para dentro de /app
+COPY . .
 
-# Como copiamos o conteúdo DA pasta direto para /app, o pom.xml estará na raiz (/app)
+# Executa o build direto, pois o pom.xml já vai estar na raiz /app
 RUN mvn clean package -DskipTests
 
 # Estágio 2: Execução do Java
