@@ -1,17 +1,21 @@
-FROM ubuntu:latest AS build
+# Estágio 1: Build da aplicação usando uma imagem oficial do Maven com JDK 17
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+# Copia os arquivos do projeto para dentro do container
 COPY . .
 
+# Executa o build do Spring Boot gerando o JAR (pulando os testes para acelerar o deploy)
+RUN mvn clean package -DskipTests
 
-RUN apt-get install maven -y
-RUN mvn clean install
-
-FROM openjdk:17-jdk-slim
+# Estágio 2: Execução da aplicação usando uma imagem leve e atualizada do Java
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
 
 EXPOSE 8080
 
-COPY --from=build /target/deploy_render-1.0.0.jar app.jar
+# Copia o arquivo .jar gerado no estágio anterior usando um caractere curinga (*) 
+# Isso evita que o build falhe caso o nome do seu JAR mude no pom.xml
+COPY --from=build /app/target/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
