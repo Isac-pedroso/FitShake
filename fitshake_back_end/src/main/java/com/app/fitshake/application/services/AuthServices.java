@@ -33,29 +33,4 @@ public class AuthServices {
                 "Login realizado com sucesso",
                 true);
     }
-
-    public AuthResponseDTO cadastrar(AuthRequestDTO dto) {
-
-        if (usuarioRepository.existsByNome(dto.nome())) {
-            throw new RuntimeException("Usuário já cadastrado com este nome");
-        }
-
-        if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Usuário já cadastrado com este email");
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(dto.nome());
-        usuario.setEmail(dto.email());
-        usuario.setSenha(dto.senha());
-
-        usuario = usuarioRepository.save(usuario);
-
-        return new AuthResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                "Usuário cadastrado com sucesso",
-                true);
-    }
 }
