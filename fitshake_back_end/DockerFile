@@ -1,20 +1,21 @@
+# Estágio 1: Build da aplicação
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copia tudo do repositório
-COPY . .
+# Copia apenas o conteúdo da pasta do backend para dentro do container
+# Isso evita copiar arquivos desnecessários do front-end para o build do Java
+COPY fitshake_back_end /app
 
-# Entra na pasta onde você colocou o Maven e o código
-WORKDIR /app/fitshake_back_end
-
+# Como copiamos o conteúdo DA pasta direto para /app, o pom.xml estará na raiz (/app)
 RUN mvn clean package -DskipTests
 
+# Estágio 2: Execução do Java
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 EXPOSE 8080
 
-# Copia o JAR gerado dentro da subpasta target do backend
-COPY --from=build /app/fitshake_back_end/target/*.jar app.jar
+# Copia o JAR gerado no estágio anterior
+COPY --from=build /app/target/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
