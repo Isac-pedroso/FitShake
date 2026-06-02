@@ -1,21 +1,20 @@
-# Estágio 1: Build da aplicação usando uma imagem oficial do Maven com JDK 17
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copia os arquivos do projeto para dentro do container
+# Copia tudo do repositório
 COPY . .
 
-# Executa o build do Spring Boot gerando o JAR (pulando os testes para acelerar o deploy)
+# Entra na pasta onde você colocou o Maven e o código
+WORKDIR /app/fitshake_back_end
+
 RUN mvn clean package -DskipTests
 
-# Estágio 2: Execução da aplicação usando uma imagem leve e atualizada do Java
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 EXPOSE 8080
 
-# Copia o arquivo .jar gerado no estágio anterior usando um caractere curinga (*) 
-# Isso evita que o build falhe caso o nome do seu JAR mude no pom.xml
-COPY --from=build /app/target/*.jar app.jar
+# Copia o JAR gerado dentro da subpasta target do backend
+COPY --from=build /app/fitshake_back_end/target/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
