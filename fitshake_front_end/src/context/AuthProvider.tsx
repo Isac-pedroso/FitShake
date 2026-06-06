@@ -38,11 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function login(user: User): Promise<LoginResponse> {
         try {
-            console.log("AUQi")
-            console.log(`/auth/login`, user)
             const response = await api.post(`/auth/login`, user);
-
-            console.log(response);
 
             await AsyncStorage.setItem(
                 "isAuthenticated",
@@ -51,11 +47,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             await AsyncStorage.setItem(
                 "userInfo",
-                JSON.stringify(user)
+                JSON.stringify(response?.data)
             );
 
             setIsAuthenticated(true);
-            setUserInfo(user);
+            setUserInfo(response?.data);
 
             return { result: true, msg: "Logado com sucesso !" };
         } catch (error: any) {
@@ -76,6 +72,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             setIsAuthenticated(false);
             setUserInfo(null);
+
+
         } catch (error) {
             console.log("Erro ao realizar logout:", error);
         }
@@ -117,7 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     useEffect(() => {
-        // isLogged();
+        isLogged();
     }, []);
 
     return (

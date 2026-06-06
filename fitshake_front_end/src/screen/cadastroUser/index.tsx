@@ -21,7 +21,7 @@ type NavigationProps = NativeStackNavigationProp<
 
 
 
-export default function CadastroUser({navigation} : {navigation: NavigationProps}) {
+export default function CadastroUser({ navigation }: { navigation: NavigationProps }) {
     const { cadastrarUsuario } = useUser();
 
     const {
@@ -82,7 +82,7 @@ export default function CadastroUser({navigation} : {navigation: NavigationProps
                 </Text>
 
                 <Text style={styles.subtitle}>
-                    Crie sua conta e comece sua evolução
+                    Transforme movimento em resultados
                 </Text>
 
                 <Controller
@@ -94,6 +94,7 @@ export default function CadastroUser({navigation} : {navigation: NavigationProps
                     render={({ field }) => (
                         <TextInput
                             placeholder="Nome"
+                            placeholderTextColor="#94A3B8"
                             value={field.value}
                             onChangeText={field.onChange}
                             style={styles.input}
@@ -121,6 +122,7 @@ export default function CadastroUser({navigation} : {navigation: NavigationProps
                     render={({ field }) => (
                         <TextInput
                             placeholder="Email"
+                            placeholderTextColor="#94A3B8"
                             value={field.value}
                             keyboardType="email-address"
                             autoCapitalize="none"
@@ -150,6 +152,7 @@ export default function CadastroUser({navigation} : {navigation: NavigationProps
                     render={({ field }) => (
                         <TextInput
                             placeholder="Senha"
+                            placeholderTextColor="#94A3B8"
                             secureTextEntry
                             value={field.value}
                             onChangeText={field.onChange}
@@ -175,66 +178,104 @@ export default function CadastroUser({navigation} : {navigation: NavigationProps
                     </Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() =>
+                        navigation.navigate("Login")
+                    }
+                >
+                    <Text style={styles.registerText}>
+                        Fazer login
+                    </Text>
+                </TouchableOpacity>
+
             </View>
         </View>
     );
 }
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#0F172A",
+        backgroundColor: "#0B1220",
         justifyContent: "center",
-        padding: 20,
+        paddingHorizontal: 24,
     },
 
     card: {
-        backgroundColor: "#1E293B",
-        borderRadius: 20,
-        padding: 24,
+        backgroundColor: "#182235",
+        borderRadius: 28,
+        padding: 28,
+        borderWidth: 1,
+        borderColor: "#243248",
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+        elevation: 8,
     },
 
     logo: {
-        fontSize: 32,
-        fontWeight: "bold",
+        fontSize: 34,
+        fontWeight: "800",
         color: "#22C55E",
         textAlign: "center",
-        marginBottom: 10,
+        marginBottom: 8,
+        letterSpacing: 1,
     },
 
     subtitle: {
-        color: "#CBD5E1",
+        color: "#94A3B8",
         textAlign: "center",
+        fontSize: 15,
         marginBottom: 30,
     },
 
     input: {
-        backgroundColor: "#334155",
-        color: "#FFF",
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        height: 55,
-        marginTop: 12,
+        backgroundColor: "#243248",
+        borderWidth: 1,
+        borderColor: "#334155",
+        color: "#F8FAFC",
+        borderRadius: 16,
+        paddingHorizontal: 18,
+        height: 58,
+        marginTop: 14,
+        fontSize: 15,
     },
 
     error: {
         color: "#EF4444",
-        marginTop: 4,
-        marginLeft: 4,
+        marginTop: 5,
+        marginLeft: 5,
+        fontSize: 13,
     },
 
     button: {
-        marginTop: 24,
-        height: 55,
-        borderRadius: 12,
+        marginTop: 28,
+        height: 58,
+        borderRadius: 16,
         backgroundColor: "#22C55E",
         justifyContent: "center",
         alignItems: "center",
+        shadowColor: "#22C55E",
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        elevation: 6,
     },
 
     buttonText: {
-        color: "#FFF",
-        fontWeight: "bold",
+        color: "#FFFFFF",
+        fontWeight: "700",
         fontSize: 16,
+        letterSpacing: 0.5,
+    },
+    registerButton: {
+        marginTop: 20,
+        alignItems: "center",
+    },
+
+    registerText: {
+        color: "#94A3B8",
+        fontSize: 14,
     },
 });
