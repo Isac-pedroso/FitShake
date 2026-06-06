@@ -28,12 +28,13 @@ public class AuthServices {
         if (!usuario.getSenha().equals(dto.senha())) {
             throw new RuntimeException("Login ou senha inválidos");
         }
-
+        System.out.println(usuario.getRole());
         return new AuthResponseDTO(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 "Login realizado com sucesso",
+                usuario.getRole(),
                 true);
     }
 

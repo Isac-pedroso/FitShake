@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.fitshake.application.dtos.AuthLoginRequestDTO;
 import com.app.fitshake.application.dtos.AuthRequestDTO;
+import com.app.fitshake.application.dtos.AuthResponseDTO;
 import com.app.fitshake.application.services.AuthServices;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +25,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthLoginRequestDTO dto) {
+    public ResponseEntity<?> login(@RequestBody AuthLoginRequestDTO dto) {
         try{
-            authServices.login(dto);
-            return ResponseEntity.ok("Logado com sucesso !");
+            AuthResponseDTO response = authServices.login(dto);
+            return ResponseEntity.ok(response);
         }catch(Exception e){
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
