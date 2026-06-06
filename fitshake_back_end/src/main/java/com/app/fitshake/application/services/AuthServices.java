@@ -1,7 +1,10 @@
 package com.app.fitshake.application.services;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
 
+import com.app.fitshake.application.dtos.AuthLoginRequestDTO;
 import com.app.fitshake.application.dtos.AuthRequestDTO;
 import com.app.fitshake.application.dtos.AuthResponseDTO;
 import com.app.fitshake.domain.entities.Usuario;
@@ -16,14 +19,14 @@ public class AuthServices {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public AuthResponseDTO login(AuthRequestDTO dto) {
+    public AuthResponseDTO login(AuthLoginRequestDTO dto) {
 
         Usuario usuario = usuarioRepository
-                .findByEmail(dto.email())
-                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
+                .findByEmail(dto.login())
+                .orElseThrow(() -> new RuntimeException("Login ou senha inválidos"));
 
         if (!usuario.getSenha().equals(dto.senha())) {
-            throw new RuntimeException("Email ou senha inválidos");
+            throw new RuntimeException("Login ou senha inválidos");
         }
 
         return new AuthResponseDTO(
@@ -33,4 +36,5 @@ public class AuthServices {
                 "Login realizado com sucesso",
                 true);
     }
+
 }

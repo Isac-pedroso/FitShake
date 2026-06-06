@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.fitshake.application.dtos.AuthLoginRequestDTO;
 import com.app.fitshake.application.dtos.AuthRequestDTO;
 import com.app.fitshake.application.services.AuthServices;
 
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequestDTO dto) {
+    public ResponseEntity<String> login(@RequestBody AuthLoginRequestDTO dto) {
         try{
             authServices.login(dto);
             return ResponseEntity.ok("Logado com sucesso !");

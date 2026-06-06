@@ -3,6 +3,8 @@ package com.app.fitshake.application.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.fitshake.application.dtos.AuthRequestDTO;
+import com.app.fitshake.application.dtos.AuthResponseDTO;
 import com.app.fitshake.application.dtos.UsuarioRequestDTO;
 import com.app.fitshake.application.dtos.UsuarioResponseDTO;
 import com.app.fitshake.domain.entities.Usuario;
@@ -17,28 +19,32 @@ public class UsuarioServices {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public UsuarioResponseDTO cadastrar(UsuarioRequestDTO dto) {
+    public AuthResponseDTO cadastrar(AuthRequestDTO dto) {
 
-        if (usuarioRepository.existsByNome(dto.nome())) {
-            throw new RuntimeException("Usuário já cadastrado com este nome");
-        }
+        boolean isExisteEmail = usuarioRepository
+                .existsByNome(dto.email());
 
-        if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Usuário já cadastrado com este email");
+        if (isExisteEmail)
+            throw new RuntimeException("Email invalido !");
+
+        boolean isExisteNome = usuarioRepository
+                .existsByNome(dto.email());
+
+        if (isExisteNome)
+            throw new RuntimeException("Nome invalido, escolha outro nome !");
+
+        if (dto.senha() == null || dto.senha().isEmpty()) {
+            throw new RuntimeException("Por favor informe uma senha !");
         }
 
         Usuario usuario = new Usuario();
+
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(dto.senha());
+        usuario.setId(null);
+        usuarioRepository.save(usuario);
 
-        usuario = usuarioRepository.save(usuario);
-
-        return new UsuarioResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                "Usuário cadastrado com sucesso",
-                true);
+        return new AuthResponseDTO(usuario);
     }
 }
