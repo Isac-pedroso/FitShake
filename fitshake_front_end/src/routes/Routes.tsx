@@ -6,8 +6,8 @@ import CadastroUser from "../screen/cadastroUser";
 
 import { RootStackParamList } from "../types/navigation.types";
 
-import { TabsAdmin } from "./TabsAdmin";
-import { TabsUser } from "./TabsUser";
+import { AdminNavigator } from "./AdminNavigator";
+import { UserNavigator } from "./UserNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -30,9 +30,9 @@ export function AppRoutes() {
                         <Stack.Screen name="CadastroUser" component={CadastroUser} />
                     </>
                 ) : String(userInfo?.role).toLocaleLowerCase().trim() === "admin" ? (
-                    <Stack.Screen name="TabsAdmin" component={TabsAdmin} />
+                    <Stack.Screen name="AdminNavigator" component={AdminNavigator} />
                 ) : (
-                    <Stack.Screen name="TabsUser" component={TabsUser} />
+                    <Stack.Screen name="UserNavigator" component={UserNavigator} />
                 )}
             </Stack.Navigator>
         </NavigationContainer>
