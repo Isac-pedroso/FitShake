@@ -13,4 +13,6 @@ export type RootStackParamList = {
     // User
     Exercicios: undefined;
     ExerciciosExecutar: {id_exercicio: number};
+    CadExercicioEtapa1: undefined;
+    CadExercicioCalibracao: undefined;
 };

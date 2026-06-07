@@ -1,9 +1,21 @@
 import Header from "@/src/components/Header";
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
-    
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+
+    async function onRefresh(){
+        setRefreshing(true);
+
+        try{
+
+        }finally{
+            setRefreshing(false)
+        }
+    }
     return (
         <View style={styles.container}>
             <Header title="Home" />
@@ -11,6 +23,12 @@ export default function Home() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             >
                 {/* SAUDAÇÃO */}
 

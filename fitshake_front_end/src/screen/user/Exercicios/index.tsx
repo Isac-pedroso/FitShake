@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useMemo, useState } from "react";
 import {
     FlatList,
+    RefreshControl,
     StyleSheet,
     Text,
     TextInput,
@@ -15,6 +16,7 @@ import {
 export default function Exercicios() {
     const navigation = useNavigation<any>();
 
+    const [refreshing, setRefreshing] = useState(false);
     const { exercicios, getTodosExercicios } = useExercicio();
 
 
@@ -31,6 +33,17 @@ export default function Exercicios() {
         );
     }, [search, exercicios]);
 
+
+
+    async function onRefresh() {
+        setRefreshing(true);
+
+        try {
+            await getTodosExercicios();
+        } finally {
+            setRefreshing(false);
+        }
+    }
     return (
         <View style={styles.container}>
             <Header title="Exercícios" />
@@ -60,6 +73,12 @@ export default function Exercicios() {
                     padding: 20,
                     paddingBottom: 120,
                 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
                     <TouchableOpacity

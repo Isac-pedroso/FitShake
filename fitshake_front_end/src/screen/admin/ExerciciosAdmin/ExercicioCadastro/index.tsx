@@ -2,7 +2,10 @@ import Header from "@/src/components/Header";
 import { useLoading } from "@/src/context/LoadingProvider";
 import { useExercicio } from "@/src/features/exercicio/exercicio.hooks";
 import { ExercicioRequest } from "@/src/features/exercicio/exercicio.types";
-import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "expo-router";
+import { useCallback, useState } from "react";
 import {
     ScrollView,
     StyleSheet,
@@ -13,8 +16,13 @@ import {
     View,
 } from "react-native";
 
+
 export default function ExercicioCadastro() {
+    const navigation = useNavigation<any>();
     const { cadastrarExercicio } = useExercicio();
+    const [calibrarAutomaticamente, setCalibrarAutomaticamente] = useState<boolean>(true);
+    const [posicionamentoConcluido, setPosicionamentoConcluido] = useState<boolean>(false);
+    const [calibracaoConcluido, setCalibracaoConcluido] = useState<boolean>(false);
 
     const {
         showLoading,
@@ -30,21 +38,110 @@ export default function ExercicioCadastro() {
         limiteMin: 0,
         limiteMax: 0,
         usaGiroscopio: false,
+        posicionamentoCelular: "",
+        descricaoPosicionamento: "",
+        fotosPosicionamento: []
     });
+
+    async function proximaEtapa() {
+        let hasError = false;
+        try {
+            showLoading("Validando campos...");
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await validarCamposCad();
+
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+
+            const payload = {
+                dados: dados,
+                posicionamento: false,
+                calibracao: false,
+                calibrarAutomaticamente: calibrarAutomaticamente,
+            }
+
+            await AsyncStorage.setItem("dadosCadExercicioTEMP", JSON.stringify(payload))
+
+            setMsgLoading("Redirecionando...");
+
+            return navigation.navigate("CadExercicioEtapa1");
+
+        } catch (error: any) {
+            hasError = true;
+
+            setIsError();
+            setMsgLoading(
+                error ||
+                "Erro ao cadastrar exercício."
+            );
+        } finally {
+            setTimeout(() => {
+                hideLoading();
+            }, hasError ? 1600 : 800);
+        }
+    }
+
+
+    async function etapaCalibrar() {
+        let hasError = false;
+        try {
+            showLoading("Validando campos...");
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await validarCamposCad();
+
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            setMsgLoading("Redirecionando...");
+
+            return navigation.navigate("CadExercicioCalibracao");
+
+        } catch (error: any) {
+            hasError = true;
+
+            setIsError();
+            setMsgLoading(
+                error ||
+                "Erro ao cadastrar exercício."
+            );
+        } finally {
+            setTimeout(() => {
+                hideLoading();
+            }, hasError ? 1600 : 800);
+        }
+    }
+
+
+
+
+    async function validarCamposCad() {
+        if (!dados.nome.trim()) {
+            throw "Informe o nome do exercício.";
+        }
+
+        if (!dados.descricao.trim()) {
+            throw "Informe a descrição.";
+        }
+    }
+
 
     async function salvar() {
         let hasError = false;
 
         try {
-            if (!dados.nome.trim()) {
-                throw "Informe o nome do exercício.";
-            }
 
-            if (!dados.descricao.trim()) {
-                throw "Informe a descrição.";
-            }
+            await new Promise(resolve => setTimeout(resolve, 200));
+            showLoading("Validando campos...");
 
-            showLoading("Salvando exercício...");
+            await validarCamposCad();
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+            setMsgLoading('Salvando exercício...');
 
             await cadastrarExercicio(dados);
 
@@ -57,6 +154,9 @@ export default function ExercicioCadastro() {
                 limiteMin: 0,
                 limiteMax: 0,
                 usaGiroscopio: false,
+                posicionamentoCelular: "",
+                descricaoPosicionamento: "",
+                fotosPosicionamento: []
             });
         } catch (error: any) {
             hasError = true;
@@ -72,6 +172,43 @@ export default function ExercicioCadastro() {
             }, hasError ? 1600 : 800);
         }
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            async function getDadosStorage() {
+                const dadosCacheStorage = await AsyncStorage.getItem("dadosCadExercicioTEMP");
+                console.log(dadosCacheStorage)
+                if (!dadosCacheStorage) {
+                    setDados({
+                        nome: "",
+                        descricao: "",
+                        limiteMin: 0,
+                        limiteMax: 0,
+                        usaGiroscopio: false,
+                        posicionamentoCelular: "",
+                        descricaoPosicionamento: "",
+                        fotosPosicionamento: []
+                    })
+
+                    setPosicionamentoConcluido(false);
+                    setCalibrarAutomaticamente(true);
+                    setCalibracaoConcluido(false);
+
+                    return;
+                }
+                const dadosCache = JSON.parse(dadosCacheStorage);
+
+                setPosicionamentoConcluido(dadosCache?.posicionamento);
+                setCalibrarAutomaticamente(dadosCache?.calibrarAutomaticamente);
+                setCalibracaoConcluido(dadosCache.calibracao)
+                setDados(dadosCache?.dados);
+            }
+
+            getDadosStorage();
+        }, [])
+    );
+
+
 
     return (
         <View style={styles.container}>
@@ -121,49 +258,74 @@ export default function ExercicioCadastro() {
                         }
                     />
 
-                    <View style={styles.row}>
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>
-                                Limite mínimo
+
+                    <View style={styles.switchCard}>
+                        <View>
+                            <Text style={styles.switchTitle}>
+                                Cilibração
                             </Text>
 
-                            <TextInput
-                                keyboardType="numeric"
-                                style={styles.input}
-                                value={String(
-                                    dados.limiteMin
-                                )}
-                                onChangeText={(text) =>
-                                    setDados({
-                                        ...dados,
-                                        limiteMin:
-                                            Number(text) || 0,
-                                    })
-                                }
-                            />
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>
-                                Limite máximo
+                            <Text style={styles.switchSubtitle}>
+                                Calibrar automaticamente o exercicio.
                             </Text>
-
-                            <TextInput
-                                keyboardType="numeric"
-                                style={styles.input}
-                                value={String(
-                                    dados.limiteMax
-                                )}
-                                onChangeText={(text) =>
-                                    setDados({
-                                        ...dados,
-                                        limiteMax:
-                                            Number(text) || 0,
-                                    })
-                                }
-                            />
                         </View>
+
+                        <Switch
+                            value={calibrarAutomaticamente}
+                            onValueChange={() => setCalibrarAutomaticamente(!calibrarAutomaticamente)}
+                            trackColor={{
+                                false: "#334155",
+                                true: "#22C55E",
+                            }}
+                        />
                     </View>
+
+                    {!calibrarAutomaticamente && (
+
+                        <View style={styles.row}>
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>
+                                    Limite mínimo
+                                </Text>
+
+                                <TextInput
+                                    keyboardType="numeric"
+                                    style={styles.input}
+                                    value={String(
+                                        dados.limiteMin
+                                    )}
+                                    onChangeText={(text) =>
+                                        setDados({
+                                            ...dados,
+                                            limiteMin:
+                                                Number(text) || 0,
+                                        })
+                                    }
+                                />
+                            </View>
+
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>
+                                    Limite máximo
+                                </Text>
+
+                                <TextInput
+                                    keyboardType="numeric"
+                                    style={styles.input}
+                                    value={String(
+                                        dados.limiteMax
+                                    )}
+                                    onChangeText={(text) =>
+                                        setDados({
+                                            ...dados,
+                                            limiteMax:
+                                                Number(text) || 0,
+                                        })
+                                    }
+                                />
+                            </View>
+                        </View>
+                    )}
 
                     <View style={styles.switchCard}>
                         <View>
@@ -194,15 +356,38 @@ export default function ExercicioCadastro() {
                     </View>
                 </View>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    activeOpacity={0.8}
-                    onPress={salvar}
-                >
-                    <Text style={styles.buttonText}>
-                        Salvar Exercício
-                    </Text>
-                </TouchableOpacity>
+                {!posicionamentoConcluido ? (
+
+                    <TouchableOpacity
+                        style={styles.button}
+                        activeOpacity={0.8}
+                        onPress={proximaEtapa}
+                    >
+                        <Text style={styles.buttonText}>
+                            Proxima etápa
+                        </Text>
+                    </TouchableOpacity>
+                ) : (!calibracaoConcluido && calibrarAutomaticamente) ? (
+                    <TouchableOpacity
+                        style={styles.button}
+                        activeOpacity={0.8}
+                        onPress={etapaCalibrar}
+                    >
+                        <Text style={styles.buttonText}>
+                            Calibrar
+                        </Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity
+                        style={styles.button}
+                        activeOpacity={0.8}
+                        onPress={salvar}
+                    >
+                        <Text style={styles.buttonText}>
+                            Salvar Exercício
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
         </View>
     );

@@ -2,6 +2,7 @@ import Header from "@/src/components/Header";
 import { useLoading } from "@/src/context/LoadingProvider";
 import { useExercicio } from "@/src/features/exercicio/exercicio.hooks";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -82,10 +83,11 @@ export default function ExerciciosAdmin() {
             <TouchableOpacity
                 activeOpacity={0.9}
                 style={styles.card}
-                onPress={() =>
+                onPress={async () => {
                     navigation.navigate("CadastroExercicio", {
                         id: item.id,
                     })
+                }
                 }
             >
                 <View style={styles.cardHeader}>
@@ -200,10 +202,12 @@ export default function ExerciciosAdmin() {
 
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() =>
+                onPress={async () => {
+                    await AsyncStorage.removeItem("dadosCadExercicioTEMP");
                     navigation.navigate(
                         "ExercicioCadastro"
                     )
+                }
                 }
             >
                 <Ionicons

@@ -1,4 +1,7 @@
 import Header from "@/src/components/Header";
+import { useAuthProvider } from "@/src/context/AuthProvider";
+import { useLoading } from "@/src/context/LoadingProvider";
+import { useExecucaoExercicio } from "@/src/features/execucaoExercicio/execucaoExercicio.hooks";
 import { useExercicio } from "@/src/features/exercicio/exercicio.hooks";
 import { RootStackParamList } from "@/src/types/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,6 +39,19 @@ export default function ExerciciosExecutar({ route }: Props) {
 
     const { exercicio, buscarExercicio } =
         useExercicio();
+
+
+    const { execucaoExercicioSalvar } = useExecucaoExercicio();
+
+    const { userInfo } = useAuthProvider();
+
+    const {
+        showLoading,
+        hideLoading,
+        setIsError,
+        setIsSuccess,
+        setMsgLoading,
+    } = useLoading();
 
     useEffect(() => {
         console.log(id_exercicio)
@@ -84,14 +100,89 @@ export default function ExerciciosExecutar({ route }: Props) {
 
 
     async function iniciarExercicio() {
-        if (!exercicio) return;
+        let hasError = false;
 
-        executouDescidaRef.current = false;
-        setQtdExecucoes(0);
-        setIsStart(true);
+        try {
+
+            await new Promise(resolve => setTimeout(resolve, 200));
+            showLoading("Iniciando exercicio...");
+
+            if (!exercicio) 
+                throw "Nenhum exercicio selecionado !";
+
+            if (!userInfo)
+                throw "Usuário não conectado !"
+
+            const payload = {
+                idUsuario: userInfo?.id,
+                idExercicio: id_exercicio,
+                repeticoes: 0,
+                tipoExecucao: 'inicio'
+            }
+
+            await execucaoExercicioSalvar(payload);
+
+            executouDescidaRef.current = false;
+            setQtdExecucoes(0);
+            setIsStart(true);
+
+
+        } catch (error: any) {
+            hasError = true;
+
+            setIsError();
+            setMsgLoading(
+                error ||
+                "Erro ao iniciar exercício."
+            );
+        } finally {
+            setTimeout(() => {
+                hideLoading();
+            }, hasError ? 1600 : 800);
+        }
     }
 
     async function finalizarExercicio() {
+        let hasError = false;
+
+        try {
+
+            await new Promise(resolve => setTimeout(resolve, 200));
+            showLoading("Finalizando exercicio...");
+
+            if (!exercicio) 
+                throw "Nenhum exercicio selecionado !";
+
+            if (!userInfo)
+                throw "Usuário não conectado !"
+
+            const payload = {
+                idUsuario: userInfo?.id,
+                idExercicio: id_exercicio,
+                repeticoes: qtdExecucoes,
+                tipoExecucao: 'fim'
+            }
+
+            await execucaoExercicioSalvar(payload);
+
+            executouDescidaRef.current = false;
+            setQtdExecucoes(0);
+            setIsStart(true);
+
+
+        } catch (error: any) {
+            hasError = true;
+
+            setIsError();
+            setMsgLoading(
+                error ||
+                "Erro ao finalizar exercício."
+            );
+        } finally {
+            setTimeout(() => {
+                hideLoading();
+            }, hasError ? 1600 : 800);
+        }
         setIsStart(false);
         executouDescidaRef.current = false;
     }

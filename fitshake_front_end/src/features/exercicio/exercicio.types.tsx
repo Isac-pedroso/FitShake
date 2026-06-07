@@ -6,6 +6,9 @@ export type ExercicioRequest = {
     limiteMin: number;
     limiteMax: number;
     usaGiroscopio: boolean;
+    posicionamentoCelular: string,
+    descricaoPosicionamento: string,
+    fotosPosicionamento: []
 }
 
 
