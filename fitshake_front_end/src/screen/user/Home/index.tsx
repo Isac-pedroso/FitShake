@@ -1,21 +1,47 @@
 import Header from "@/src/components/Header";
+import { useAuthProvider } from "@/src/context/AuthProvider";
+import { useExecucaoExercicio } from "@/src/features/execucaoExercicio/execucaoExercicio.hooks";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
     const [refreshing, setRefreshing] = useState<boolean>(false);
+    const { dashBoardUser, buscarDashBoardUser } = useExecucaoExercicio();
+    const { userInfo } = useAuthProvider();
 
+    useEffect(() => {
+        buscarDashBoardUser(Number(userInfo?.id));
+    }, [])
 
-    async function onRefresh(){
+    async function onRefresh() {
         setRefreshing(true);
 
-        try{
-
-        }finally{
+        try {
+            await buscarDashBoardUser(Number(userInfo?.id));
+        } finally {
             setRefreshing(false)
         }
     }
+
+    function formatarTempo(segundos: number) {
+        const horas = Math.floor(segundos / 3600);
+
+        const minutos = Math.floor(
+            (segundos % 3600) / 60
+        );
+
+        const segundosRestantes = segundos % 60;
+
+        return {
+            horas,
+            minutos,
+            segundos: segundosRestantes
+        };
+    }
+
+    const tempo = formatarTempo(Number(dashBoardUser?.tempo_total_geral));
+
     return (
         <View style={styles.container}>
             <Header title="Home" />
@@ -58,7 +84,7 @@ export default function Home() {
                             />
 
                             <Text style={styles.metricValue}>
-                                8
+                                {dashBoardUser?.exercicios_dia}
                             </Text>
 
                             <Text style={styles.metricLabel}>
@@ -74,7 +100,7 @@ export default function Home() {
                             />
 
                             <Text style={styles.metricValue}>
-                                32 min
+                                {`${tempo.minutos}m ${tempo.segundos}s`}
                             </Text>
 
                             <Text style={styles.metricLabel}>
@@ -90,7 +116,7 @@ export default function Home() {
                             />
 
                             <Text style={styles.metricValue}>
-                                520
+                                {dashBoardUser?.total_repeticoes}
                             </Text>
 
                             <Text style={styles.metricLabel}>

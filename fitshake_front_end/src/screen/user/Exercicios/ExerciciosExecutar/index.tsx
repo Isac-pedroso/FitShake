@@ -14,6 +14,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
+    Vibration,
     View
 } from "react-native";
 
@@ -101,6 +102,8 @@ export default function ExerciciosExecutar({ route }: Props) {
 
     async function iniciarExercicio() {
         let hasError = false;
+
+        Vibration.vibrate(300)
 
         try {
 
