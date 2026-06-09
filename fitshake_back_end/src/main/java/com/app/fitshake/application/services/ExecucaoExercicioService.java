@@ -3,6 +3,7 @@ package com.app.fitshake.application.services;
 
 import org.springframework.stereotype.Service;
 
+import com.app.fitshake.application.dtos.DashBoardExecucoesUser;
 import com.app.fitshake.application.dtos.ExecucaoExercicioRequest;
 import com.app.fitshake.application.dtos.ExecucaoExercicioResponse;
 import com.app.fitshake.domain.entities.ExecucaoExercicio;
@@ -37,5 +38,10 @@ public class ExecucaoExercicioService {
                 salvo.getRepeticoes(),
                 salvo.getDataHora(),
                 salvo.getTipoExecucao());
+    }
+
+
+    public DashBoardExecucoesUser buscarDadosExecucoesExerciciosUsuario(Long id_usuario){
+        return repository.findDashBoardExecucoesUser(id_usuario);
     }
 }

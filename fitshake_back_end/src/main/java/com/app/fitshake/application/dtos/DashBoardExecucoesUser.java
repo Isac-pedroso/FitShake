@@ -1,7 +1,7 @@
 package com.app.fitshake.application.dtos;
 
 public record DashBoardExecucoesUser(
-        Integer exercicios_dia,
-        Integer tempo_total_geral,
-        Integer total_repeticoes) {
+                Long exercicios_dia,
+                Long tempo_total_geral,
+                Long total_repeticoes) {
 }

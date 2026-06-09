@@ -1,0 +1,10 @@
+com\app\fitshake\domain\repositories\UsuarioRepository.class
+com\app\fitshake\domain\entities\Usuario.class
+com\app\fitshake\presentation\UsuarioController.class
+com\app\fitshake\domain\repositories\ExercicioRepository.class
+com\app\fitshake\presentation\ExercicioController.class
+com\app\fitshake\application\dtos\AuthRequestDTO.class
+com\app\fitshake\application\services\AuthServices.class
+com\app\fitshake\FitshakeApplication.class
+com\app\fitshake\presentation\AuthController.class
+com\app\fitshake\application\dtos\AuthResponseDTO.class

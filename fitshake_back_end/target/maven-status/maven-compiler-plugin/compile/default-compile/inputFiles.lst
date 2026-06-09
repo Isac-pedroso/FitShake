@@ -1,0 +1,11 @@
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\application\dtos\AuthRequestDTO.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\application\dtos\AuthResponseDTO.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\application\services\AuthServices.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\domain\entities\Exercicio.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\domain\entities\Usuario.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\domain\repositories\ExercicioRepository.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\domain\repositories\UsuarioRepository.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\FitshakeApplication.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\presentation\AuthController.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\presentation\ExercicioController.java
+C:\APP\FitShake\fitshake_back_end\src\main\java\com\app\fitshake\presentation\UsuarioController.java

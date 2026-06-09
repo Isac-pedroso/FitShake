@@ -14,7 +14,7 @@ public interface ExecucaoExercicioRepository extends JpaRepository<ExecucaoExerc
             SELECT 
                 tipo_execucao AS status,
                 data_hora AS hora_inicio,
-                LEAD(data_hora) OVER (ORDER BY data_hora) AS hora_fim,
+                LEAD(data_hora) OVER (PARTITION BY id_usuario, id_exercicio ORDER BY data_hora) AS hora_fim,
                 LEAD(tipo_execucao) OVER (ORDER BY data_hora) AS proximo_status
             FROM execucoes_exercicios
             WHERE id_usuario = :id_usuario
@@ -23,22 +23,23 @@ public interface ExecucaoExercicioRepository extends JpaRepository<ExecucaoExerc
         )
 
         select 
-            (SELECT COUNT(DISTINCT id_exercicio) 
+            CAST((SELECT COUNT(DISTINCT id_exercicio) 
             FROM execucoes_exercicios 
             WHERE id_usuario = :id_usuario
             AND data_hora >= CURRENT_DATE 
-            AND data_hora < CURRENT_DATE + INTERVAL '1 day') AS exercicios_dia,
-            COALESCE(SUM(hora_fim - hora_inicio), '00:00:00'::interval) AS tempo_total_geral,
+            AND data_hora < CURRENT_DATE + INTERVAL '1 day') AS BIGINT) AS exercicios_dia,
             
-            (SELECT COALESCE(SUM(repeticoes), 0) 
+            CAST(COALESCE(EXTRACT(EPOCH FROM SUM(hora_fim - hora_inicio)), 0) AS BIGINT) AS tempo_total_geral,
+            
+            CAST((SELECT COALESCE(SUM(repeticoes), 0) 
             FROM execucoes_exercicios 
             WHERE id_usuario = :id_usuario 
             AND data_hora >= CURRENT_DATE 
-            AND data_hora < CURRENT_DATE + INTERVAL '1 day') AS total_repeticoes
+            AND data_hora < CURRENT_DATE + INTERVAL '1 day') AS BIGINT) AS total_repeticoes
 
         FROM execucoes_pareadas
         WHERE status = 'inicio' 
         AND proximo_status = 'fim';
             """, nativeQuery = true)
-    DashBoardExecucoesUser findDashBoardExecucoesUser(@Param("id_usuario") Long id_usuario)
+    DashBoardExecucoesUser findDashBoardExecucoesUser(@Param("id_usuario") Long id_usuario);
 }
