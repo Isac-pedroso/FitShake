@@ -1,3 +1,5 @@
+package com.app.fitshake.infra.configs;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
