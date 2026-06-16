@@ -39,7 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async function login(user: User): Promise<LoginResponse> {
         try {
             const response = await api.post(`/auth/login`, user);
-
+            console.warn(response)
             await AsyncStorage.setItem(
                 "isAuthenticated",
                 JSON.stringify(true)
@@ -55,6 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             return { result: true, msg: "Logado com sucesso !" };
         } catch (error: any) {
+            console.log(error)
             console.log("STATUS:", error.response?.status);
             console.log("DATA:", error.response?.data);
 
