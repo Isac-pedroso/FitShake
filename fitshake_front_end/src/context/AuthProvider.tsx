@@ -9,6 +9,7 @@ import {
 
 import { User } from "../features/user/user.type";
 import api from "../services/api";
+import { useLoading } from "./LoadingProvider";
 
 type LoginResponse = {
     result: boolean;
@@ -33,13 +34,22 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userInfo, setUserInfo] = useState<User | null>(null);
+    const { showLoading, hideLoading, setIsError, setIsSuccess, setMsgLoading } = useLoading();
 
     const URL_API = process.env.EXPO_PUBLIC_URL_API;
 
     async function login(user: User): Promise<LoginResponse> {
+        let hasError = false;
+
         try {
+            showLoading("Logando...");
+
             const response = await api.post(`/auth/login`, user);
             console.warn(response)
+
+            if (!response?.data)
+                throw new Error("Email ou senha incorretos !");
+            
             await AsyncStorage.setItem(
                 "isAuthenticated",
                 JSON.stringify(true)
@@ -53,16 +63,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setIsAuthenticated(true);
             setUserInfo(response?.data);
 
+            setIsSuccess();
+            setMsgLoading("Logado com sucesso !");
             return { result: true, msg: "Logado com sucesso !" };
         } catch (error: any) {
             console.log(error)
             console.log("STATUS:", error.response?.status);
             console.log("DATA:", error.response?.data);
-
-            return {
-                result: false,
-                msg: error.response?.data || "Login ou senha incorreto!"
-            };
+            hasError = true;
+            setMsgLoading(error.response?.data || "Login ou senha incorreto!");
+            setIsError();
+        } finally {
+            setTimeout(hideLoading, hasError ? 1600 : 600);
         }
     }
 
